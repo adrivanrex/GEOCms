@@ -3,12 +3,12 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="http://127.0.0.1:8000/socket.io/lib/socket.io.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script>
-	  var socket = io.connect('http://127.0.0.1:8000');
+	  var socket = io.connect('http://localhost:3000');
 	  socket.on('news', function (data) {
-	    console.log(data);
-	    socket.emit('my other event', { my: 'data' });
+	    console.log("This is the data sent to the client: " + data.hello);	    
+	    socket.emit('my other event', { my: 'Hey hey hey! I sent some data to the server!' });
 	  });
 	</script>
   </head>
