@@ -9,6 +9,9 @@
 	  socket.on('news', function (data) {
 	    console.log("This is the data sent to the client: " + data.hello);	    
 	    socket.emit('my other event', { my: 'Hey hey hey! I sent some data to the server!' });
+	  })
+	  socket.on('secondEvent', function(data) {
+	     console.log(data.msg);
 	  });
 	</script>
   </head>
