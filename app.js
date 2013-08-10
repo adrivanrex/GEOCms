@@ -6,6 +6,7 @@
 var express = require('express')
     , routes = require('./routes')
     , user = require('./routes/user')
+    , index = require('./routes/index')
     , http = require('http')
     , path = require('path')
     , sio = require('socket.io');
@@ -16,6 +17,12 @@ var app = express();
 //start socket.io
 var server = http.createServer(app);
 var io = sio.listen(server);
+
+//save the sockets
+var allSockets = {};
+
+//send to module
+index.getAllSockets(allSockets);
 
 /*
 app.configure(function(){
@@ -64,8 +71,17 @@ server.listen(app.get('port'), function(){
 });
 
 io.sockets.on('connection', function (socket) {
+    
+    //save the socket
+    allSockets[socket.id] = socket;
+
     socket.emit('news', { hello: 'world' });
     socket.on('my other event', function (data) {
         console.log("Sent from client: " + data.my);
+    });
+    
+    //handler to remove the socket from memory when it disconnects
+    socket.on('disconnect', function() {
+        delete allSockets[socket.id];
     });
 });
