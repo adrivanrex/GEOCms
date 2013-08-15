@@ -52,8 +52,8 @@ Maps.prototype.changePosition = function (m , x, y, c, f) {
 
 //create the Maps-instance
 var maps = new Maps(),
-    x = 10,
-    y = 10;
+    x = 8.239681899999999,
+    y = 124.2484;
 
 google.maps.event.addDomListener(window,'load',function(){
   //initialize maps
@@ -61,29 +61,34 @@ google.maps.event.addDomListener(window,'load',function(){
   
   //add a marker
  
-  
- //var rex1 = marker.mapMarker(8.239681899999999,124.2484);
+    var marker = {
+      mapMarker: function(x,y,z){
+        return maps.addMarker(x, y ,'hello,'+z+' ', true);
+      }
+    }
+
+ //var rex1 = marker.mapMarker(8.239681899999999,124.2484,'rexadrivan');
+
+
  //var rex2 = marker.mapMarker(8.239681899999999,124.2400);
   var units = [];
   socket.on('update-location',function(data){
 	console.log(data);
 	 var unitname = data.unitid;
+
 	/* Create Markers */
-	var marker = {
-		mapMarker: function(x,y,z){
-			return maps.addMarker(x, y ,'hello,'+z+' ', true);
-		}
-	  }
+
 	// if unit exist push to array units then create a marker else: change map position
 	if(units.indexOf(data.unitid) == -1){
 		units.push(data.unitid);
-		window[data.unitid] = marker.mapMarker(x,y,unitname);
+		window[data.unitid] = marker.mapMarker(data.latitude,data.longitude,unitname);
 		
 	}else{
 		console.log('unit exist');
-		maps.changePosition(window[data.unitid], data.longitude, data.latitude ,true,function(){});
+		maps.changePosition(window[data.unitid], data.latitude, data.longitude ,true,function(){});
+   //maps.changePosition(rex1, data.latitude,data.longitude ,true,function(){});
 	}
-
+  console.log(units);
 		
 	 });
 
