@@ -17,11 +17,6 @@ var app = express();
 var server = http.createServer(app);
 var io = sio.listen(server);
 
-//save the sockets
-var allSockets = {};
-
-//send to module
-index.getAllSockets(allSockets);
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -39,8 +34,27 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
+var config = {};
+
+app.get('/', function(req,res){
+	var longitude = req.query["longitude"];
+	var latitude = req.query["latitude"];
+	var username = req.query["username"];
+	var message = req.query["message"];
+	var to = req.query["to"];
+	var unitid = req.query["unitid"];
+	
+	config.longitude = longitude;
+	config.latitude = latitude;
+	config.username = username;
+	config.message = message;
+	config.to = to;
+	config.unitid = unitid;
+	res.render('index', { title: 'Express' }); 
+	
+});
 app.get('/users', user.list);
+
 
 
 
@@ -48,18 +62,17 @@ server.listen(app.get('port'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
 
-io.sockets.on('connection', function (socket) {
-    
-    //save the socket
-    allSockets[socket.id] = socket;
+var clients = {};
 
-    socket.emit('news', { hello: 'world' });
-    socket.on('my other event', function (data) {
-        console.log("Sent from client: " + data.my);
-    });
-    
-    //handler to remove the socket from memory when it disconnects
-    socket.on('disconnect', function() {
-        delete allSockets[socket.id];
-    });
+io.sockets.on('connection',function(socket){
+	
+	  clients[config.username] = {
+      "socket": socket.id
+    };
+	
+   console.log("Sending: " + config.latitude + " to " + config.to);
+   if(clients[config.to]){
+		io.sockets.socket(clients[config.to].socket).emit("update-location", config);
+	}
+
 });
